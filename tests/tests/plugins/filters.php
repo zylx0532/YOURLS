@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-class Plugin_Filters_Tests extends PHPUnit_Framework_TestCase {
+class Plugin_Filters_Tests extends PHPUnit\Framework\TestCase {
 
     /**
      * this var will allow to share "$this" across multiple tests here
@@ -376,12 +376,34 @@ class Plugin_Filters_Tests extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Check that yourls_get_filters() returns expected values
+     */
+    public function test_get_filters() {
+        $hook = rand_str();
+
+        yourls_add_filter( $hook, 'some_function' );
+        yourls_add_filter( $hook, 'some_other_function', 1337 );
+
+        $filters = yourls_get_filters( $hook );
+        $this->assertTrue(isset($filters[10]['some_function']));
+        $this->assertTrue(isset($filters[1337]['some_other_function']));
+
+        $this->assertSame( [], yourls_get_filters( rand_str() ) );
+    }
+
+    /**
      * Check that applied function must exist
      *
-     * @expectedException PHPUnit_Framework_Error
      * @since 0.1
      */
     public function test_function_must_exist_if_applied() {
+        if (PHP_VERSION_ID >= 80000) {
+            $this->expectException(TypeError::class);
+        } else {
+            $this->expectException(PHPUnit\Framework\Error\Error::class);
+        }
+        $this->expectExceptionMessageMatches('/call_user_func_array\(\).* a valid callback, function (\'|")[0-9a-z]+(\'|") not found or invalid function name/');
+
         $hook = rand_str();
         yourls_add_filter( $hook, rand_str() );
         // this will trigger an error, converted to an exception by PHPUnit

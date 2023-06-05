@@ -5,6 +5,7 @@
 	colors="false"
 	stopOnFailure="false"
 	verbose="true"
+    cacheResult="true"
 	bootstrap="tests/bootstrap.php"
 	>
 	<testsuites>
@@ -18,7 +19,7 @@
 		</exclude>
 	</groups>
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
+        <whitelist>
             <directory suffix=".php">./includes</directory>
             <exclude>
                 <directory suffix=".php">./includes/vendors</directory>
@@ -28,11 +29,9 @@
 	<php>
 		<!-- Constants -->
 		<const name="PHPUNIT_TESTSUITE" value="true" />
-		<const name="LOCAL_TESTSUITE" value="true" />
 		<!-- Login -->
 		<request name="username" value="yourls"/>
-		<request name="password" value="travis-ci-test"/>
-		<server name="REQUEST_URI" value="/"/>
+		<request name="password" value="secret-ci-test"/>
 		<!-- Install -->
 		<server name="SERVER_SOFTWARE" value="TRAVIS APACHE"/>
 		<!-- Stats data -->
@@ -42,7 +41,4 @@
 		<!-- API -->
 		<request name="format" value="simple"/>
 	</php>
-	<logging>
-		<log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false" />
-	</logging>
 </phpunit>

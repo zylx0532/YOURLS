@@ -6,7 +6,7 @@
  * @group formatting
  * @since 0.1
  */
-class Format_General extends PHPUnit_Framework_TestCase {
+class Format_General extends PHPUnit\Framework\TestCase {
 
     /**
      * Data to serialize
@@ -48,7 +48,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
     public function test_is_serialized( $data ) {
         $this->assertTrue( yourls_is_serialized( serialize( $data ) ) );
     }
-    
+
     /**
      * Check that yourls_is_serialized doesn't assume garbage is serialized
      *
@@ -58,7 +58,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
     public function test_is_not_serialized( $data ) {
         $this->assertFalse( yourls_is_serialized( $data ) );
     }
-    
+
     /**
      * Integer (1337) to string (3jk) to integer
      *
@@ -70,11 +70,11 @@ class Format_General extends PHPUnit_Framework_TestCase {
         for( $i=0; $i<10; $i++ ) {
             $rnd[]= mt_rand( 1, 1000000 );
         }
-    
+
         foreach( $rnd as $integer ) {
             $this->assertEquals( $integer, yourls_string2int( yourls_int2string( $integer ) ) );
         }
-    
+
     }
 
     /**
@@ -92,33 +92,26 @@ class Format_General extends PHPUnit_Framework_TestCase {
                 $i++;
             }
         }
-    
+
         foreach( $rnd as $string ) {
             $this->assertEquals( $string, yourls_int2string( yourls_string2int( $string ) ) );
         }
     }
-    
-    /**
-     * Some random keywords
-     */
-    public function some_random_keywords() {
-        return array(
-            array( '1' ),
-            array( 'a' ),
-            array( 'hello-world' ),
-            array( '1337ozhOZH' ),
-            array( '@#!?*' ),
-        );
-    }
 
     /**
-     * Checking that string2htmlid is an alphanumeric string
+     * Checking that yourls_unique_element_id is a unique string
      *
-     * @dataProvider some_random_keywords
-     * @since 0.1
      */
-    public function test_string2htmlid( $string ) {
-        $this->assertTrue( ctype_alnum( yourls_string2htmlid( $string ) ) );
+    public function test_string2htmlid() {
+        $id1 = yourls_unique_element_id();
+        $id2 = yourls_unique_element_id();
+        $id3 = yourls_unique_element_id('foo', 10);
+        $id4 = yourls_unique_element_id();
+        $this->assertIsString($id1);
+        $this->assertIsString($id2);
+        $this->assertNotSame($id1, $id2);
+        $this->assertEquals('foo10', $id3, 'ID is built using the specified prefix and counter value.');
+        $this->assertStringEndsWith('11', $id4, 'ID counter continues to increment from the last value.');
     }
 
     /**
@@ -128,19 +121,19 @@ class Format_General extends PHPUnit_Framework_TestCase {
      */
     function test_valid_regexp() {
         $pattern = yourls_make_regexp_pattern( yourls_get_shorturl_charset() );
-        
-        /* To validate a RegExp just run it against null.
+
+        /* To validate a RegExp just run it against an empty string.
            If it returns explicit false (=== false), it's broken. Otherwise it's valid.
-           From: http://stackoverflow.com/a/12941133/36850
+           From: https://stackoverflow.com/a/12941133/36850
            Cool to know :)
-           
-           We're testing it as used in yourls_sanitize_string()
+
+           We're testing it as used in yourls_sanitize_keyword()
            TODO: more random char strings to test?
         */
-    
-        $this->assertFalse( preg_match( '![^' . $pattern . ']!', null ) === false );
+
+        $this->assertFalse( preg_match( '![^' . $pattern . ']!', '' ) === false );
     }
-    
+
     /**
      * Trim long strings
      *
@@ -159,7 +152,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
         $trim = "The Plague That Makes Your Booty Mo..";
         $this->assertSame( $trim, yourls_trim_long_string( $long, 37, '..' ) );
     }
-    
+
     /**
      * Return true for UTF8 strings
      *
@@ -171,7 +164,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
     function test_is_utf8( $string ) {
         $this->assertTrue( yourls_seems_utf8( $string ) );
     }
- 
+
     /**
      * Return false for non UTF8 strings
      *
@@ -183,15 +176,15 @@ class Format_General extends PHPUnit_Framework_TestCase {
     function test_is_not_utf8( $string ) {
         $this->assertFalse( yourls_seems_utf8( $string ) );
     }
-    
+
     function valid_utf8() {
         return $this->get_data( YOURLS_TESTDATA_DIR . '/formatting/utf-8.txt' );
     }
- 
+
     function invalid_utf8() {
         return $this->get_data( YOURLS_TESTDATA_DIR . '/formatting/big5.txt' );
     }
-    
+
     /**
      * Parse a file and return its content as a data provider
      */
@@ -203,7 +196,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
         unset( $string );
         return $strings;
     }
- 
+
     /**
      * Test yourls_backslashit
      *
@@ -213,7 +206,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
         $this->assertSame( yourls_backslashit( 'hello world 123 !' ), '\h\e\l\l\o \w\o\r\l\d 123 !' );
         $this->assertSame( yourls_backslashit( '1, 2, 3' ), '\\\1, 2, 3' );
     }
-    
+
     /**
      * Test the bookmarklet generator
      *
@@ -227,7 +220,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
         $code = yourls_make_bookmarklet( 'hello' );
         $this->assertTrue( is_string( $code ) );
     }
-    
+
     /**
      * Test yourls_specialchars basics
      *
@@ -261,8 +254,7 @@ class Format_General extends PHPUnit_Framework_TestCase {
      * @since 0.1
      */
     function test_specialchars_allowed_entities() {
-        global $yourls_allowedentitynames;
-        foreach ( $yourls_allowedentitynames as $ent ) {
+        foreach ( yourls_kses_allowed_entities() as $ent ) {
             $ent = '&' . $ent . ';';
             $this->assertEquals( $ent, yourls_specialchars( $ent ) );
         }

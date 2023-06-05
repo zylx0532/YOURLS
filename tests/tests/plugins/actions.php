@@ -7,7 +7,7 @@
  * @since 0.1
  */
 
-class Plugin_Actions_Tests extends PHPUnit_Framework_TestCase {
+class Plugin_Actions_Tests extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * Check adding an action with a simple function name
@@ -422,10 +422,16 @@ class Plugin_Actions_Tests extends PHPUnit_Framework_TestCase {
     /**
      * Check that applied function must exist
      *
-     * @expectedException PHPUnit_Framework_Error
      * @since 0.1
      */
     public function test_function_must_exist_if_applied() {
+        if (PHP_VERSION_ID >= 80000) {
+            $this->expectException(TypeError::class);
+        } else {
+            $this->expectException(PHPUnit\Framework\Error\Error::class);
+        }
+        $this->expectExceptionMessageMatches('/call_user_func_array\(\).* a valid callback, function (\'|")[0-9a-z]+(\'|") not found or invalid function name/');
+
         $hook = rand_str();
         yourls_add_action( $hook, rand_str() );
         // this will trigger an error, converted to an exception by PHPUnit
@@ -475,6 +481,37 @@ class Plugin_Actions_Tests extends PHPUnit_Framework_TestCase {
 
         $this->expectOutputString( "array (0 => 'hello',1 => 'world',)" );
         yourls_do_action( $hook, 'hello', 'world' );
+    }
+
+    /**
+     * Check return values of yourls_has_action()
+     */
+    public function test_has_action_return_values() {
+        $hook = rand_str();
+
+        yourls_add_action( $hook, 'some_function' );
+        yourls_add_action( $hook, 'some_other_function', 1337 );
+
+        $this->assertTrue( yourls_has_action( $hook ) );
+        $this->assertSame( 10, yourls_has_action( $hook, 'some_function' ) );
+        $this->assertSame( 1337, yourls_has_action( $hook, 'some_other_function' ) );
+        $this->assertFalse( yourls_has_action( $hook, 'nope_not_this_function' ) );
+    }
+
+    /**
+     * Check that yourls_get_actions() returns expected values
+     */
+    public function test_get_actions() {
+        $hook = rand_str();
+
+        yourls_add_action( $hook, 'some_function' );
+        yourls_add_action( $hook, 'some_other_function', 1337 );
+
+        $actions = yourls_get_actions( $hook );
+        $this->assertTrue(isset($actions[10]['some_function']));
+        $this->assertTrue(isset($actions[1337]['some_other_function']));
+
+        $this->assertSame( [], yourls_get_actions( rand_str() ) );
     }
 
     /**

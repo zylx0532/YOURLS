@@ -5,14 +5,12 @@
  *
  * @group install
  */
-class Install_Tests extends PHPUnit_Framework_TestCase {
+class Install_Tests extends PHPUnit\Framework\TestCase {
 
     /**
 	 * Check if YOURLS is declared installed
 	 */
 	public function test_install() {
-		$this->assertFalse( yourls_is_installed() );
-		yourls_get_all_options();
 		$this->assertTrue( yourls_is_installed() );
 	}
 
@@ -29,19 +27,19 @@ class Install_Tests extends PHPUnit_Framework_TestCase {
 	 * Test (sort of) table creation
 	 */
 	public function test_create_tables() {
-        
+
         /* The expected result has:
          *   - success messages: the table are created with a "CREATE IF NOT EXISTS",
          *     hence, will not be recreated once more, they're already created
          *     upon install procedure
-         *   - error messages: the function cannot initalize options and links, since
+         *   - error messages: the function cannot initialize options and links, since
          *     they have been populated during install procedure as well
          *
          * A more thorough test would be to mockup the DB connection and create another
          * set of tables (with another prefix for instance).
          * Well. Consider this for next DB engine maybe? :)
          */
-        
+
         $expected = array(
             'success' => array (
                 "Table 'yourls_url' created.",
@@ -54,21 +52,21 @@ class Install_Tests extends PHPUnit_Framework_TestCase {
                 'Could not insert sample short URLs',
             ),
         );
-        
+
         $this->assertSame( $expected, yourls_create_sql_tables() );
 	}
-    
+
 	/**
 	 * Test (sort of) defining constants
 	 */
     public function test_correct_config() {
         $test = new \YOURLS\Config\Config(YOURLS_CONFIGFILE);
-        
+
         // This should return a readable file
         $readable = is_readable($test->find_config(YOURLS_CONFIGFILE));
         $this->assertTrue($readable);
         // For the record, $this->assertFileIsReadable() was introduced around PHPUnit 5.6
-        
+
         // redefining YOURLS_ constants should not throw any error ("constant already defined...")
         // or define any new constants
         $consts = get_defined_constants(true);
@@ -81,18 +79,22 @@ class Install_Tests extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * Test incorrect config provided
-     * @expectedException YOURLS\Exceptions\ConfigException
 	 */
     public function test_incorrect_config() {
+        $this->expectException(YOURLS\Exceptions\ConfigException::class);
+        $this->expectExceptionMessageMatches('/User defined config not found at \'[0-9a-z]+\'/');
+
         $test = new \YOURLS\Config\Config(rand_str());
         $test->find_config();
     }
 
 	/**
 	 * Test config not found
-     * @expectedException YOURLS\Exceptions\ConfigException
 	 */
     public function test_not_found_config() {
+        $this->expectException(YOURLS\Exceptions\ConfigException::class);
+        $this->expectExceptionMessage('Cannot find config.php. Please read the readme.html to learn how to install YOURLS');
+
         $test = new \YOURLS\Config\Config();
         $test->set_root(rand_str());
         $test->find_config();
@@ -103,11 +105,9 @@ class Install_Tests extends PHPUnit_Framework_TestCase {
 	 */
     public function test_init_defaults() {
         $test = new \YOURLS\Config\InitDefaults();
-        
+
         $expected = array (
             'include_core_funcs' => true,
-            'include_auth_funcs' => false,
-            'include_install_upgrade_funcs' => false,
             'default_timezone' => true,
             'load_default_textdomain' => true,
             'check_maintenance_mode' => true,
@@ -126,10 +126,10 @@ class Install_Tests extends PHPUnit_Framework_TestCase {
             'check_new_version' => true,
             'init_admin' => true,
         );
-        
+
         $actual = get_class_vars(get_class($test));
-        
+
         $this->assertSame($expected, $actual);
     }
-  
+
 }

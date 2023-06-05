@@ -8,10 +8,10 @@
  * @group http
  * @since 0.1
  */
-class HTTP_Requests_Tests extends PHPUnit_Framework_TestCase {
-    
+class HTTP_Requests_Tests extends PHPUnit\Framework\TestCase {
+
     private function url( $what = '' ) {
-        return 'http://httpbin.org/' . $what;
+        return 'https://httpbin.org/' . $what;
     }
 
     /**

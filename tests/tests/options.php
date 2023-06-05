@@ -6,7 +6,8 @@
  * @group options
  * @since 0.1
  */
-class Option_Tests extends PHPUnit_Framework_TestCase {
+#[AllowDynamicProperties]
+class Option_Tests extends PHPUnit\Framework\TestCase {
 
 	/**
 	 * Basic tests
@@ -38,7 +39,7 @@ class Option_Tests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue( yourls_delete_option( $key2 ) );
 		$this->assertFalse( yourls_get_option( $key2 ) );
 	}
-	
+
 	/**
 	 * Check with array and objects
 	 *
@@ -82,9 +83,9 @@ class Option_Tests extends PHPUnit_Framework_TestCase {
         $this->assertFalse( yourls_add_option( $empty, '' ) );
         $this->assertFalse( yourls_update_option( $empty, '' ) );
         $this->assertFalse( yourls_delete_option( $empty ) );
-	}	
+	}
 
-	function setUp() {
+	function setUp(): void {
 		parent::setUp();
 		$this->slash_1 = 'String with 1 slash \\';
 		$this->slash_2 = 'String with 2 slashes \\\\';

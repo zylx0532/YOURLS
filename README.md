@@ -1,41 +1,38 @@
 <h1 align="center">
   <a href="https://yourls.org">
-    <img src="images/yourls-logo.png" alt="YOURLS">
+    <img src="images/yourls-logo.svg" width=66% alt="YOURLS">
   </a>
 </h1>
 
 > Your Own URL Shortener
 
-[![Build Status](https://api.travis-ci.org/YOURLS/YOURLS.svg?branch=master)](https://travis-ci.org/YOURLS/YOURLS) [![Packagist](https://img.shields.io/packagist/v/yourls/yourls.svg)](https://packagist.org/packages/yourls/yourls) [![OpenCollective](https://opencollective.com/yourls/backers/badge.svg)](https://opencollective.com/yourls#contributors) 
+![CI](https://github.com/YOURLS/YOURLS/workflows/CI/badge.svg) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/YOURLS/YOURLS/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/YOURLS/YOURLS/?branch=master) ![PHP Version Support](https://img.shields.io/packagist/php-v/yourls/yourls) [![Packagist](https://img.shields.io/packagist/v/yourls/yourls.svg)](https://packagist.org/packages/yourls/yourls) [![OpenCollective](https://opencollective.com/yourls/backers/badge.svg)](https://opencollective.com/yourls#contributors) 
 [![OpenCollective](https://opencollective.com/yourls/sponsors/badge.svg)](#sponsors)
 
-**YOURLS** is a set of PHP scripts that will allow you to run <strong>Y</strong>our <strong>O</strong>wn <strong>URL</strong> <strong>S</strong>hortener. You'll have full control over your data, detailed stats, analytics, plugins, and more. It's free and open-source.
+**YOURLS** is a set of PHP scripts that will allow you to run <strong>Y</strong>our <strong>O</strong>wn <strong>URL</strong> <strong>S</strong>hortener, on **your** server. You'll have full control over your data, detailed stats, analytics, plugins, and more. It's free and open-source.
 
 ## Quick Start
 
-To get started, check [yourls.org](https://yourls.org)!
-Learn more tweaks in the [Wiki documentation](https://github.com/YOURLS/YOURLS/wiki/).
+Get YOURLS :
+* Download the latest [release](https://github.com/YOURLS/YOURLS/releases)
+* Using Composer? You can simply `composer create-project yourls/yourls .` in an empty directory.
 
+Install YOURLS:
+* Read [yourls.org](https://yourls.org) for starters
+* The complete documentation is on [docs.yourls.org](https://docs.yourls.org) and contains everything from beginners to experts.
 
 ## Community news, tips and tricks
 
 * Read and subscribe to the [The Official YOURLS Blog](http://blog.yourls.org)
-* Follow [@yourls](https://twitter.com/yourls) on Twitter
-* Subscribe to the [YOURLS User Newsletter](https://yourls.org/newsletter) (infrequent, low volume)
-
-
-## Keep track of development
-
-* Follow [@yourls_dev](https://twitter.com/yourls_dev)
-* Check [commit messages](https://github.com/YOURLS/YOURLS/commits/master)
-* Check the [Road map](https://github.com/orgs/YOURLS/projects/1)
-
+* Check what the user community makes: plugins, tools, guides and more on [Awesome YOURLS](https://github.com/YOURLS/awesome-yourls)
+* Engage users and ask for help in our [community discussions](https://github.com/YOURLS/YOURLS/discussions)
+* Keep track of development: "Star" and "Watch" this project, follow [commit messages](https://github.com/YOURLS/YOURLS/commits/master)
 
 ## Contributing
 
-__Before opening any issue, please search for existing issues and read the [Issue Guidelines](https://github.com/YOURLS/YOURLS/wiki/Bug-Report).__
+Feature suggestion? Bug to report?
 
-Have a **new bug** to report? [Please open a new issue](https://github.com/YOURLS/YOURLS/issues/new?title=Issue+title+--+be+DESCRIPTIVE).
+__Before opening any issue, please search for existing [issues](https://github.com/YOURLS/YOURLS/issues) (open and closed) and read the [Contributing Guidelines](https://github.com/YOURLS/.github/blob/master/CONTRIBUTING.md).__
 
 
 ## Backers

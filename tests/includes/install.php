@@ -33,8 +33,9 @@ function yut_install_yourls() {
  */
 function yut_find_config() {
     $config_locations = array(
-        dirname(__DIR__). '/yourls-tests-config.php',         // manual, run locally
-        dirname(dirname(__DIR__)) . '/user/config.php',       // Travis, run from YOURLS/YOURLS
+        dirname(dirname(__DIR__)). '/yourls-tests-config.php',  // manual, run locally, config in YOURLS root
+        dirname(__DIR__). '/yourls-tests-config.php',           // manual, run locally, config in YOURLS/tests
+        dirname(dirname(__DIR__)) . '/user/config.php',         // Travis, run from YOURLS/YOURLS
     );
 
     foreach($config_locations as $config) {
@@ -58,8 +59,7 @@ function yut_drop_all_tables_if_local() {
 		return;
 
 	// If not running in Travis environment, drop any tables from the selected database prior to starting tests
-	global $ydb;
     $tables = sprintf('%s,%s,%s', YOURLS_DB_TABLE_URL, YOURLS_DB_TABLE_OPTIONS, YOURLS_DB_TABLE_LOG);
     $sql = sprintf('DROP TABLE IF EXISTS %s', $tables);
-    $ydb->perform($sql);
+    yourls_get_db()->perform($sql);
 }

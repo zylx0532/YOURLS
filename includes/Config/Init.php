@@ -9,7 +9,7 @@ namespace YOURLS\Config;
 class Init {
 
     /**
-     * @param InitDefaults
+     * @var InitDefaults
      */
     protected $actions;
 
@@ -27,7 +27,7 @@ class Init {
             $this->include_core_functions();
         }
 
-        // Enforce UTC timezone to suppress PHP warnings -- correct date/time will be managed using the config time offset
+        // Enforce UTC timezone. Date/time can be adjusted with a plugin.
         if ($actions->default_timezone === true) {
             date_default_timezone_set( 'UTC' );
         }
@@ -57,7 +57,7 @@ class Init {
             $this->include_db_files();
         }
 
-        // Allow early inclusion of a cache layer
+        // Allow early and unconditional inclusion of custom code
         if ($actions->include_cache === true) {
             $this->include_cache_files();
         }
@@ -85,14 +85,18 @@ class Init {
         // Check if need to redirect to install procedure
         if ($actions->redirect_to_install === true) {
             if (!yourls_is_installed() && !yourls_is_installing()) {
-                yourls_redirect( yourls_admin_url('install.php'), 302 );
+                yourls_no_cache_headers();
+                yourls_redirect( yourls_admin_url('install.php'), 307 );
+                exit();
             }
         }
 
         // Check if upgrade is needed (bypassed if upgrading or installing)
         if ($actions->check_if_upgrade_needed === true) {
             if (!yourls_is_upgrading() && !yourls_is_installing() && yourls_upgrade_is_needed()) {
-                yourls_redirect( yourls_admin_url('upgrade.php'), 302 );
+                yourls_no_cache_headers();
+                yourls_redirect( yourls_admin_url('upgrade.php'), 307 );
+                exit();
             }
         }
 
@@ -141,22 +145,41 @@ class Init {
      * @return void
      */
     public function include_db_files() {
-        // Allow drop-in replacement for the DB engine
-        if (file_exists(YOURLS_USERDIR.'/db.php')) {
-            require_once YOURLS_USERDIR.'/db.php';
-        } else {
-            require_once YOURLS_INC.'/class-mysql.php';
+        // Attempt to open drop-in replacement for the DB engine else default to core engine
+        $file = YOURLS_USERDIR . '/db.php';
+        $attempt = false;
+        if(file_exists($file)) {
+            $attempt = yourls_include_file_sandbox( $file );
+            // Check if we have an error to display
+            if ( is_string( $attempt ) ) {
+                yourls_add_notice( $attempt );
+            }
+        }
+
+        // Fallback to core DB engine
+        if ( $attempt !== true ) {
+            require_once YOURLS_INC . '/class-mysql.php';
             yourls_db_connect();
         }
     }
 
     /**
+     * Include custom extension file.
+     *
+     * "Cache" stands for "Custom Additional Code for Hazardous Extensions".
+     *
      * @since  1.7.3
      * @return void
      */
     public function include_cache_files() {
-        if (file_exists(YOURLS_USERDIR.'/cache.php')) {
-            require_once YOURLS_USERDIR.'/cache.php';
+        $file = YOURLS_USERDIR . '/cache.php';
+        $attempt = false;
+        if(file_exists($file)) {
+            $attempt = yourls_include_file_sandbox($file);
+            // Check if we have an error to display
+            if (is_string($attempt)) {
+                yourls_add_notice($attempt);
+            }
         }
     }
 
@@ -167,6 +190,11 @@ class Init {
     public function include_core_functions() {
         require_once YOURLS_INC.'/version.php';
         require_once YOURLS_INC.'/functions.php';
+        require_once YOURLS_INC.'/functions-geo.php';
+        require_once YOURLS_INC.'/functions-shorturls.php';
+        require_once YOURLS_INC.'/functions-debug.php';
+        require_once YOURLS_INC.'/functions-options.php';
+        require_once YOURLS_INC.'/functions-links.php';
         require_once YOURLS_INC.'/functions-plugins.php';
         require_once YOURLS_INC.'/functions-formatting.php';
         require_once YOURLS_INC.'/functions-api.php';
@@ -177,17 +205,9 @@ class Init {
         require_once YOURLS_INC.'/functions-http.php';
         require_once YOURLS_INC.'/functions-infos.php';
         require_once YOURLS_INC.'/functions-deprecated.php';
-
-        // Load auth functions if needed
-        if (yourls_is_private() || $this->actions->include_auth_funcs === true) {
-            require_once YOURLS_INC.'/functions-auth.php';
-        }
-
-        // Load install & upgrade functions if needed
-        if ($this->actions->include_install_upgrade_funcs === true) {
-            require_once YOURLS_INC.'/functions-upgrade.php';
-            require_once YOURLS_INC.'/functions-install.php';
-        }
+        require_once YOURLS_INC.'/functions-auth.php';
+        require_once YOURLS_INC.'/functions-upgrade.php';
+        require_once YOURLS_INC.'/functions-install.php';
     }
 
 }
